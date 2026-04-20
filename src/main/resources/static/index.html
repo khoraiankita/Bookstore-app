@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bookavy</title>
+    <meta charset="UTF-8">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: linear-gradient(to right, #cbb9a9, #e6d3c3);
+        }
+
+        .container {
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 220px;
+            background: #d8c3a5;
+            padding: 20px;
+            height: 100vh;
+        }
+
+        .sidebar h2 {
+            margin-bottom: 20px;
+        }
+
+        .sidebar p {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .sidebar p:hover {
+            background: #ddd;
+            border-radius: 5px;
+        }
+
+        /* Main */
+        .main {
+            flex: 1;
+            padding: 30px;
+        }
+
+        .search {
+            width: 60%;
+            padding: 10px;
+            border-radius: 20px;
+            border: none;
+            margin-bottom: 20px;
+        }
+
+        .form input {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            width: 300px;
+            border-radius: 10px;
+            border: none;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 20px;
+            margin: 5px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .add { background: #5e3023; }
+        .view { background: #895737; }
+
+        /* Books Grid */
+        .books {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: #fffaf5;
+            width: 200px;
+            padding: 15px;
+            margin: 10px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .card img {
+            width: 100%;
+            border-radius: 10px;
+        }
+
+        .card h4 {
+            margin: 10px 0 5px;
+        }
+
+        .card button {
+            margin-top: 5px;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .cart { background: #cbb9a9; color: white; }
+        .delete { background: #e6d3c3; color: white; }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>📚 Bookavy</h2>
+        <p>👤 Profile</p>
+        <p>📦 Orders</p>
+        <p>❤️ Favorites</p>
+        <p>⚙️ Settings</p>
+    </div>
+
+    <!-- Main -->
+    <div class="main">
+
+        <input type="text" class="search" placeholder="🔍 Search books..." onkeyup="searchBooks()">
+
+        <h2>Select a Book</h2>
+
+        <!-- Form -->
+        <div class="form">
+            <input type="text" id="title" placeholder="Enter title">
+            <input type="text" id="author" placeholder="Enter author">
+
+            <button class="btn add" onclick="addBook()">Add Book</button>
+            <button class="btn view" onclick="viewBooks()">View Books</button>
+        </div>
+
+        <!-- Book List -->
+        <div id="bookList" class="books"></div>
+
+    </div>
+
+</div>
+
+<script>
+
+let allBooks = [];
+
+async function addBook() {
+    const title = document.getElementById("title").value;
+    const author = document.getElementById("author").value;
+
+    const book = {
+        title: title,
+        author: author,
+        price: 499,
+        category: "General",
+        status: "Currently Reading"
+    };
+
+    await fetch("http://localhost:8082/add", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(book)
+    });
+
+    alert("Book Added!");
+    viewBooks();
+}
+
+async function viewBooks() {
+    const res = await fetch("http://localhost:8082/books");
+    const data = await res.json();
+
+    allBooks = data;
+    displayBooks(data);
+}
+
+function displayBooks(books) {
+    let output = "";
+
+    books.forEach(book => {
+        output += `
+        <div class="card">
+            <img src="https://covers.openlibrary.org/b/title/${book.title}-M.jpg" 
+                 onerror="this.src='https://via.placeholder.com/150'">
+
+            <h4>${book.title}</h4>
+            <p>${book.author}</p>
+            <p>₹${book.price}</p>
+            <p>${book.status}</p>
+
+            <button class="cart" onclick="addToCart(${book.id})">🛒</button>
+            <button class="delete" onclick="deleteBook(${book.id})">❌</button>
+        </div>
+        `;
+    });
+
+    document.getElementById("bookList").innerHTML = output;
+}
+
+function searchBooks() {
+    const text = document.querySelector(".search").value.toLowerCase();
+
+    const filtered = allBooks.filter(book =>
+        book.title.toLowerCase().includes(text) ||
+        book.author.toLowerCase().includes(text)
+    );
+
+    displayBooks(filtered);
+}
+
+async function addToCart(id) {
+    await fetch("http://localhost:8082/cart/add", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            bookId: id,
+            quantity: 1
+        })
+    });
+
+    alert("Added to Cart!");
+}
+
+async function deleteBook(id) {
+    await fetch(`http://localhost:8082/books/${id}`, {
+        method: "DELETE"
+    });
+
+    alert("Deleted!");
+    viewBooks();
+}
+
+</script>
+
+</body>
+</html>
