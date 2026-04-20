@@ -56,6 +56,3 @@ Use Postman for:
 ##Author
 
 Ankita Khorai
-
-
-⭐ If you like this project, give it a star!
