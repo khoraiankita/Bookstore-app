@@ -7,8 +7,17 @@
     <style>
         body {
             margin: 0;
-            font-family: Arial;
-            background: linear-gradient(to right, #cbb9a9, #e6d3c3);
+            font-family: 'Segoe UI', sans-serif;
+
+            background:
+                linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+                url("https://images.unsplash.com/photo-1524995997946-a1c2e315a42f");
+
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+
+            color: white;
         }
 
         .container {
@@ -17,79 +26,128 @@
 
         /* Sidebar */
         .sidebar {
-            width: 220px;
-            background: #d8c3a5;
-            padding: 20px;
+            width: 240px;
+            padding: 25px;
             height: 100vh;
+
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(15px);
+
+            border-right: 1px solid rgba(255,255,255,0.2);
         }
 
         .sidebar h2 {
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
 
         .sidebar p {
-            padding: 10px;
+            padding: 12px;
+            border-radius: 10px;
             cursor: pointer;
+            transition: 0.3s;
         }
 
         .sidebar p:hover {
-            background: #ddd;
-            border-radius: 5px;
+            background: rgba(255,255,255,0.2);
         }
 
         /* Main */
         .main {
             flex: 1;
-            padding: 30px;
+            padding: 40px;
         }
 
+        /* Hero Section */
+        .hero {
+            margin-bottom: 30px;
+            max-width: 500px;
+        }
+
+        .hero h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            color: #ddd;
+        }
+
+        /* Search */
         .search {
             width: 60%;
-            padding: 10px;
-            border-radius: 20px;
+            padding: 12px 20px;
+            border-radius: 30px;
             border: none;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            backdrop-filter: blur(10px);
+            outline: none;
             margin-bottom: 20px;
+        }
+
+        /* Form */
+        .form {
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            width: 350px;
         }
 
         .form input {
             display: block;
             margin: 10px 0;
             padding: 10px;
-            width: 300px;
+            width: 100%;
             border-radius: 10px;
             border: none;
         }
 
+        /* Buttons */
         .btn {
             padding: 12px 20px;
             border: none;
-            border-radius: 20px;
+            border-radius: 25px;
             margin: 5px;
             cursor: pointer;
+            background: linear-gradient(45deg, #ff7e5f, #feb47b);
             color: white;
+            transition: 0.3s;
         }
 
-        .add { background: #5e3023; }
-        .view { background: #895737; }
+        .btn:hover {
+            transform: scale(1.05);
+        }
 
         /* Books Grid */
         .books {
             display: flex;
             flex-wrap: wrap;
-            margin-top: 20px;
+            margin-top: 30px;
         }
 
         .card {
-            background: #fffaf5;
-            width: 200px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+
+            width: 220px;
             padding: 15px;
-            margin: 10px;
-            border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            margin: 15px;
+
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+
+            transition: 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
         }
 
         .card img {
             width: 100%;
+            height: 250px;
+            object-fit: cover;
             border-radius: 10px;
         }
 
@@ -99,14 +157,21 @@
 
         .card button {
             margin-top: 5px;
-            padding: 5px 10px;
+            padding: 6px 10px;
             border: none;
             border-radius: 10px;
             cursor: pointer;
         }
 
-        .cart { background: #cbb9a9; color: white; }
-        .delete { background: #e6d3c3; color: white; }
+        .cart {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .delete {
+            background: #f44336;
+            color: white;
+        }
 
     </style>
 </head>
@@ -127,6 +192,13 @@
     <!-- Main -->
     <div class="main">
 
+        <!-- Hero -->
+        <div class="hero">
+            <h1>Discover Your Next Book</h1>
+            <p>Explore, organize, and manage your reading journey beautifully.</p>
+        </div>
+
+        <!-- Search -->
         <input type="text" class="search" placeholder="🔍 Search books..." onkeyup="searchBooks()">
 
         <h2>Select a Book</h2>
@@ -136,11 +208,11 @@
             <input type="text" id="title" placeholder="Enter title">
             <input type="text" id="author" placeholder="Enter author">
 
-            <button class="btn add" onclick="addBook()">Add Book</button>
-            <button class="btn view" onclick="viewBooks()">View Books</button>
+            <button class="btn" onclick="addBook()">Add Book</button>
+            <button class="btn" onclick="viewBooks()">View Books</button>
         </div>
 
-        <!-- Book List -->
+        <!-- Books -->
         <div id="bookList" class="books"></div>
 
     </div>
@@ -189,7 +261,7 @@ function displayBooks(books) {
     books.forEach(book => {
         output += `
         <div class="card">
-            <img src="https://covers.openlibrary.org/b/title/${book.title}-M.jpg" 
+            <img src="https://covers.openlibrary.org/b/title/${book.title}-M.jpg"
                  onerror="this.src='https://via.placeholder.com/150'">
 
             <h4>${book.title}</h4>
